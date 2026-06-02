@@ -1,0 +1,33 @@
+name: basic_cleaning
+conda_env: conda.yml
+
+entry_points:
+  main:
+    parameters:
+      input_artifact:
+        description: input parquet file
+        type: str
+      output_artifact:
+        description: Name for the W&B artifact that will be created
+        type: str
+      output_type:
+        description: Type of the artifact to create
+        type: str
+        default: raw_data
+      output_description:
+        description: Description for the artifact
+        type: str
+      min_price:
+        description: min price
+        type: float
+      min_price:
+        description: max price
+        type: float
+
+    command: >-
+      python run.py --input_artifact {input_artifact} \
+                              --output_artifact {output_artifact} \
+                              --output_type {output_type} \
+                              --output_description {output_description} \
+                              --min_price {min_price} \
+                              --min_price {min_price}
