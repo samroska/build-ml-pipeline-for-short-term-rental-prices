@@ -73,9 +73,7 @@ def go(args):
     ######################################
     # Fit the pipeline sk_pipe by calling the .fit method on X_train and y_train
     sk_pipe.fit(X_train,y_train)
-    ######################################
-    sk_pipe.fit(X_train,y_train)
-    
+
     # Compute r2 and MAE
     logger.info("Scoring")
     r_squared = sk_pipe.score(X_val, y_val)
@@ -103,28 +101,11 @@ def go(args):
             input_example=X_val.iloc[:2],
         )
     ######################################
-    os.makedirs("./random_forest_dir", exist_ok=True)
-    mlflow.sklearn.save_model(
-            sk_pipe,
-            "./random_forest_dir",
-            serialization_format=mlflow.sklearn.SERIALIZATION_FORMAT_CLOUDPICKLE,
-            input_example=X_val.iloc[:2],
-        )
-    ######################################
     # Upload the model we just exported to W&B
     # HINT: use wandb.Artifact to create an artifact. Use args.output_artifact as artifact name, "model_export" as
     # type, provide a description and add rf_config as metadata. Then, use the .add_dir method of the artifact instance
     # you just created to add the "random_forest_dir" directory to the artifact, and finally use
     # run.log_artifact to log the artifact to the run
-    artifact = wandb.Artifact(
-            args.output_artifact,
-            type="model_export",
-            description="Random Forest pipeline export",
-        )
-    artifact.add_dir("./random_forest_dir")
-
-    run.log_artifact(artifact)
-    ######################################
     artifact = wandb.Artifact(
             args.output_artifact,
             type="model_export",
