@@ -24,6 +24,10 @@ _steps = [
 @hydra.main(version_base=None, config_name='config', config_path='.')  # Adding version_base for Python 3.13 compatibility
 def go(config: DictConfig):
 
+    # MLflow 3.x requires a database backend instead of the deprecated file store
+    db_path = os.path.join(hydra.utils.get_original_cwd(), "mlflow.db")
+    mlflow.set_tracking_uri(f"sqlite:///{db_path}")
+
     # Setup the wandb experiment. All runs will be grouped under this name
     os.environ["WANDB_PROJECT"] = config["main"]["project_name"]
     os.environ["WANDB_RUN_GROUP"] = config["main"]["experiment_name"]
