@@ -72,7 +72,7 @@ def go(args):
 
     ######################################
     # Fit the pipeline sk_pipe by calling the .fit method on X_train and y_train
-    # YOUR CODE HERE
+    sk_pipe.fit(X_train,y_train)
     ######################################
     sk_pipe.fit(X_train,y_train)
     
@@ -95,7 +95,13 @@ def go(args):
     ######################################
     # Save the sk_pipe pipeline as a mlflow.sklearn model in the directory "random_forest_dir"
     # HINT: use mlflow.sklearn.save_model
-    # YOUR CODE HERE
+    os.makedirs("./random_forest_dir", exist_ok=True)
+    mlflow.sklearn.save_model(
+            sk_pipe,
+            "./random_forest_dir",
+            serialization_format=mlflow.sklearn.SERIALIZATION_FORMAT_CLOUDPICKLE,
+            input_example=X_val.iloc[:2],
+        )
     ######################################
     os.makedirs("./random_forest_dir", exist_ok=True)
     mlflow.sklearn.save_model(
@@ -110,7 +116,14 @@ def go(args):
     # type, provide a description and add rf_config as metadata. Then, use the .add_dir method of the artifact instance
     # you just created to add the "random_forest_dir" directory to the artifact, and finally use
     # run.log_artifact to log the artifact to the run
-    # YOUR CODE HERE
+    artifact = wandb.Artifact(
+            args.output_artifact,
+            type="model_export",
+            description="Random Forest pipeline export",
+        )
+    artifact.add_dir("./random_forest_dir")
+
+    run.log_artifact(artifact)
     ######################################
     artifact = wandb.Artifact(
             args.output_artifact,
@@ -125,6 +138,12 @@ def go(args):
 
     ######################################
     # Here we save r_squared under the "r2" key
+    run.summary['r2'] = r_squared
+    # Now log the variable "mae" under the key "mae".
+    run.summary['mae'] = mae
+    ######################################
+
+    # Upload to W&B the feture importance visualization
     run.log(
         {
             "r2": r_squared,
@@ -166,9 +185,9 @@ def get_inference_pipeline(rf_config, max_tfidf_features):
     # 1 - A SimpleImputer(strategy="most_frequent") to impute missing values
     # 2 - A OneHotEncoder() step to encode the variable
     non_ordinal_categorical_preproc = Pipeline(steps=[
-    ("imputer", SimpleImputer(strategy="most_frequent")),
-    ("encoder", OneHotEncoder()),
-])
+        ("imputer", SimpleImputer(strategy="most_frequent")),
+        ("encoder", OneHotEncoder()),
+    ])
     ######################################
 
     # Let's impute the numerical columns to make sure we can handle missing values

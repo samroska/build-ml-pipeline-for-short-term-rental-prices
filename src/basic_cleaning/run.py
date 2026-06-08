@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 """
-performs basic cleaning on the data and saves the results in W&B
+Performs basic cleaning on the data and saves the results in W&B
 """
 import argparse
 import logging
